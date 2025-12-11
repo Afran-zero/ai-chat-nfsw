@@ -1,0 +1,40 @@
+# Couple Chat AI - Backend Requirements
+# Python 3.11+
+
+# Core Framework
+fastapi>=0.109.0
+uvicorn[standard]>=0.27.0
+pydantic>=2.5.0
+pydantic-settings>=2.1.0
+python-multipart>=0.0.6
+
+# WebSocket
+websockets>=12.0
+
+# Database & Storage
+supabase>=2.3.0
+postgrest>=0.13.0
+
+# Encryption
+cryptography>=41.0.0
+
+# AI & ML
+langchain>=0.1.0
+langgraph>=0.0.20
+
+# Embeddings 
+sentence-transformers>=2.2.0
+torch>=2.1.0
+transformers>=4.36.0
+
+# Utilities
+python-dotenv>=1.0.0
+httpx>=0.24.0,<0.26
+numpy>=1.26.0
+
+# Optional - requires Visual C++ Build Tools:
+# chromadb>=0.4.0
+# llama-cpp-python>=0.2.0
+# llama-index>=0.9.0
+# llama-index-embeddings-huggingface>=0.1.0
+# llama-index-vector-stores-chroma>=0.1.0

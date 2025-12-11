@@ -1,0 +1,150 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 255, 255, 255;
+  --background-rgb: 10, 0, 0;
+  --romantic: 139, 10, 26;
+  --gold: 212, 165, 116;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: rgb(var(--background-rgb));
+  min-height: 100vh;
+  min-height: 100dvh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(139, 10, 26, 0.3);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 10, 26, 0.5);
+}
+
+/* Hide scrollbar on mobile */
+@media (max-width: 768px) {
+  ::-webkit-scrollbar {
+    display: none;
+  }
+  body {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+/* Romantic glow effects */
+.romantic-glow {
+  box-shadow: 0 0 30px rgba(139, 10, 26, 0.4);
+}
+
+/* Message bubble styles */
+.message-bubble {
+  @apply rounded-2xl px-4 py-2 max-w-[85%] md:max-w-[70%];
+}
+
+.message-bubble-own {
+  @apply bg-gradient-to-br from-[#8B0A1A] to-[#6a0815] text-white rounded-br-md;
+}
+
+.message-bubble-other {
+  @apply bg-[#1a0508] text-white rounded-bl-md border border-white/5;
+}
+
+.message-bubble-bot {
+  @apply bg-gradient-to-br from-purple-900/50 to-[#8B0A1A]/30 text-white border border-purple-500/20;
+}
+
+/* Input styles */
+.input-romantic {
+  @apply bg-[#0d0000] border border-white/10 rounded-xl px-4 py-3
+         focus:outline-none focus:border-[#8B0A1A]/50
+         placeholder:text-gray-600 transition-all duration-200;
+}
+
+/* Button styles */
+.btn-romantic {
+  @apply bg-gradient-to-r from-[#8B0A1A] to-[#a01020] text-white font-medium
+         rounded-xl px-6 py-3 transition-all duration-200
+         hover:shadow-lg hover:shadow-[#8B0A1A]/30
+         active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+.btn-romantic-outline {
+  @apply border border-[#8B0A1A]/30 text-[#8B0A1A] hover:bg-[#8B0A1A]/10
+         rounded-xl px-6 py-3 transition-all duration-200
+         active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+/* Card styles */
+.card-romantic {
+  @apply bg-gradient-to-br from-white/[0.03] to-transparent 
+         border border-white/[0.05] rounded-2xl backdrop-blur-sm;
+}
+
+.typing-indicator span:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.typing-indicator span:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+/* Heart animation for reactions */
+@keyframes heartBeat {
+  0%, 100% { transform: scale(1); }
+  25% { transform: scale(1.2); }
+  50% { transform: scale(1); }
+  75% { transform: scale(1.1); }
+}
+
+.heart-beat {
+  animation: heartBeat 0.6s ease-in-out;
+}
+
+/* View once blur effect */
+.view-once-blur {
+  filter: blur(20px);
+  transition: filter 0.3s ease;
+}
+
+.view-once-blur:hover {
+  filter: blur(10px);
+}
+
+/* Remember button glow */
+.remember-glow {
+  @apply relative;
+}
+
+.remember-glow::after {
+  content: '';
+  @apply absolute inset-0 rounded-full bg-romantic opacity-0 transition-opacity duration-300;
+  filter: blur(10px);
+}
+
+.remember-glow:hover::after {
+  opacity: 0.3;
+}
