@@ -2,10 +2,17 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import { 
   Shield, Heart, Brain, Lock, MessageCircle, 
   Sparkles, Users, Eye, ChevronRight, Star
 } from 'lucide-react';
+
+// Dynamically import DarkVeil with no SSR
+const DarkVeil = dynamic(() => import('./components/DarkVeil'), {
+  ssr: false,
+  loading: () => <div className="absolute inset-0 bg-gradient-to-br from-[#1a0508] via-[#0d0000] to-[#0a0000]" />
+});
 
 const features = [
   {
@@ -60,56 +67,23 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-[#0a0000] overflow-hidden relative">
-      {/* Animated Background */}
+      {/* WebGL Animated Background */}
       <div className="fixed inset-0 z-0">
-        {/* Red velvet gradient */}
+        {/* Base gradient */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#1a0508] via-[#0d0000] to-[#0a0000]" />
         
-        {/* Shine ray effect */}
-        <div 
-          className="absolute inset-0 opacity-30 transition-all duration-1000 ease-out"
-          style={{
-            background: `radial-gradient(ellipse 80% 50% at ${mousePosition.x}% ${mousePosition.y}%, rgba(139, 10, 26, 0.4) 0%, transparent 50%)`,
-          }}
+        {/* DarkVeil shader */}
+        <DarkVeil 
+          hueShift={-10}
+          noiseIntensity={0.03}
+          scanlineIntensity={0.05}
+          speed={0.3}
+          warpAmount={0.2}
+          resolutionScale={0.8}
         />
         
-        {/* Diagonal shine line */}
-        <div 
-          className={`absolute w-[200%] h-1 bg-gradient-to-r from-transparent via-[#8B0A1A]/50 to-transparent 
-            transform -rotate-45 transition-all duration-[2000ms] ease-out ${isLoaded ? 'translate-x-0 opacity-100' : '-translate-x-full opacity-0'}`}
-          style={{ 
-            top: '30%', 
-            left: '-50%',
-            boxShadow: '0 0 60px 20px rgba(139, 10, 26, 0.4)'
-          }}
-        />
-        
-        {/* Second shine line */}
-        <div 
-          className={`absolute w-[200%] h-[2px] bg-gradient-to-r from-transparent via-[#D4A574]/30 to-transparent 
-            transform -rotate-45 transition-all duration-[2500ms] delay-500 ease-out ${isLoaded ? 'translate-x-0 opacity-100' : '-translate-x-full opacity-0'}`}
-          style={{ 
-            top: '60%', 
-            left: '-50%',
-            boxShadow: '0 0 40px 10px rgba(212, 165, 116, 0.2)'
-          }}
-        />
-        
-        {/* Floating particles */}
-        <div className="absolute inset-0 overflow-hidden">
-          {[...Array(30)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute w-1 h-1 bg-[#8B0A1A]/40 rounded-full animate-pulse"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                animationDuration: `${3 + Math.random() * 4}s`,
-                animationDelay: `${Math.random() * 2}s`
-              }}
-            />
-          ))}
-        </div>
+        {/* Overlay gradient for depth */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0000] via-transparent to-transparent opacity-60" />
       </div>
 
       {/* Content */}

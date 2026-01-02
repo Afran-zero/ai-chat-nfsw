@@ -37,7 +37,8 @@ async def lifespan(app: FastAPI):
     print(f"📍 Environment: {settings.environment}")
     print(f"🔐 Encryption: AES-256-GCM enabled")
     print(f"🧠 Embedding model: {settings.embedding_model}")
-    print(f"💾 ChromaDB: {settings.chroma_persist_directory}")
+    chroma_info = "Cloud" if settings.chroma_cloud_enabled else f"Local ({settings.chroma_persist_directory})"
+    print(f"💾 ChromaDB: {chroma_info}")
     print(f"✅ Server ready!")
     
     yield

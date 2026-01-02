@@ -6,7 +6,6 @@ Provides async-compatible wrapper around Supabase Python client.
 from typing import Any, Optional
 from functools import lru_cache
 from supabase import create_client, Client
-from supabase.lib.client_options import ClientOptions
 
 from config import settings
 
@@ -18,17 +17,13 @@ class SupabaseClient:
     
     def __init__(self):
         """Initialize Supabase client."""
-        options = ClientOptions(
-            postgrest_client_timeout=10,
-            storage_client_timeout=30,
-        )
         try:
             self._client: Client = create_client(
                 settings.supabase_url,
-                settings.supabase_key,
-                options=options
+                settings.supabase_key
             )
             self._connected = True
+            print("✅ Supabase connected successfully")
         except Exception as e:
             print(f"⚠️ Supabase connection failed: {e}")
             print("Running in offline/demo mode. Update SUPABASE_KEY in .env")

@@ -1,6 +1,6 @@
 """
 Bot service for AI assistant interactions.
-Uses OpenRouter API for cloud LLM access.
+Uses OpenRouter or Groq API for cloud LLM access.
 """
 
 import httpx
@@ -20,7 +20,7 @@ _conversation_history: Dict[int, List[Dict]] = {}  # room_id -> messages
 class BotService:
     """
     Service for AI bot interactions.
-    Uses OpenRouter API for LLM responses.
+    Uses OpenRouter or Groq API for LLM responses.
     """
     
     OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
@@ -28,12 +28,24 @@ class BotService:
     def __init__(self):
         """Initialize bot service."""
         self._http_client = None
+        self._groq_client = None
     
     def _get_client(self) -> httpx.AsyncClient:
         """Get HTTP client for API calls."""
         if self._http_client is None:
             self._http_client = httpx.AsyncClient(timeout=30.0)
         return self._http_client
+    
+    def _get_groq_client(self):
+        """Get Groq client for API calls."""
+        if self._groq_client is None:
+            try:
+                from groq import Groq
+                self._groq_client = Groq(api_key=settings.groq_api_key)
+            except ImportError:
+                print("❌ Groq package not installed. Install with: pip install groq")
+                return None
+        return self._groq_client
     
     def _remember_name(self, room_id: int, user_id: str, name: str):
         """Store a user's name in memory."""
@@ -148,6 +160,48 @@ Remember details users share with you and reference them naturally."""
             print(f"OpenRouter exception: {e}")
             return await self._simple_response(messages[-1]["content"] if messages else "", room_id, user_id)
     
+    async def _call_groq(self, messages: List[Dict], room_id: int, user_id: str, nsfw_enabled: bool = False) -> str:
+        """Call Groq API using official Python client."""
+        print(f"🤖 Groq API key present: {bool(settings.groq_api_key)}")
+        print(f"🤖 Model: {settings.groq_model}")
+        
+        if not settings.groq_api_key:
+            print("⚠️ No Groq API key, using simple response")
+            return await self._simple_response(messages[-1]["content"] if messages else "", room_id, user_id)
+        
+        groq_client = self._get_groq_client()
+        if not groq_client:
+            print("⚠️ Groq client not available, using simple response")
+            return await self._simple_response(messages[-1]["content"] if messages else "", room_id, user_id)
+        
+        system_prompt = self._build_system_prompt(room_id, user_id, nsfw_enabled)
+        
+        full_messages = [{"role": "system", "content": system_prompt}] + messages
+        
+        try:
+            print(f"🤖 Calling Groq with {len(full_messages)} messages...")
+            
+            # Run Groq client in thread pool since it's synchronous
+            import asyncio
+            loop = asyncio.get_event_loop()
+            completion = await loop.run_in_executor(
+                None,
+                lambda: groq_client.chat.completions.create(
+                    model=settings.groq_model,
+                    messages=full_messages,
+                    max_tokens=settings.llm_max_tokens,
+                    temperature=settings.llm_temperature,
+                )
+            )
+            
+            result = completion.choices[0].message.content
+            print(f"✅ Groq response: {result[:100]}...")
+            return result
+                
+        except Exception as e:
+            print(f"Groq exception: {e}")
+            return await self._simple_response(messages[-1]["content"] if messages else "", room_id, user_id)
+    
     async def _simple_response(self, message: str, room_id: int, user_id: str) -> str:
         """Simple fallback response when API is not available."""
         msg_lower = message.lower()
@@ -220,7 +274,9 @@ Remember details users share with you and reference them naturally."""
         history = self._get_history(room_id)
         
         # Generate response
-        if settings.openrouter_api_key:
+        if settings.llm_provider == "groq" and settings.groq_api_key:
+            response = await self._call_groq(history, room_id, user_id, nsfw_enabled)
+        elif settings.llm_provider == "openrouter" and settings.openrouter_api_key:
             response = await self._call_openrouter(history, room_id, user_id, nsfw_enabled)
         else:
             response = await self._simple_response(user_message, room_id, user_id)
@@ -237,8 +293,9 @@ Remember details users share with you and reference them naturally."""
         return {
             "active": True,
             "nsfw_mode": room.nsfw_mode.value if room else "disabled",
-            "ai_enabled": bool(settings.openrouter_api_key),
-            "model": settings.openrouter_model if settings.openrouter_api_key else "simple",
+            "ai_enabled": bool(settings.openrouter_api_key or settings.groq_api_key),
+            "provider": settings.llm_provider,
+            "model": settings.groq_model if settings.llm_provider == "groq" else settings.openrouter_model,
             "names_remembered": len(self._get_all_names(room_id)),
         }
 

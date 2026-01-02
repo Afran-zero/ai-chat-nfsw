@@ -90,7 +90,7 @@ couple-chat-ai/
 - **Python 3.11+**
 - **Node.js 18+**
 - **Supabase Account** (free tier works)
-- **Local LLM** (Ollama recommended)
+- **Groq API Key** (free tier available at https://console.groq.com/)
 
 ### 1. Clone & Setup
 
@@ -130,10 +130,10 @@ SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 # Encryption (generate with: python -c "import secrets; print(secrets.token_hex(32))")
 ENCRYPTION_KEY=your-64-char-hex-key
 
-# Local LLM
-LLM_MODEL_PATH=./models/llama-3.1-8b-instruct.Q4_K_M.gguf
-# OR use Ollama
-OLLAMA_BASE_URL=http://localhost:11434
+# Groq API Configuration
+LLM_PROVIDER=groq
+GROQ_API_KEY=your-groq-api-key
+GROQ_MODEL=llama-3.1-8b-instant
 
 # ChromaDB
 CHROMA_PERSIST_DIR=./chroma_data
@@ -147,47 +147,22 @@ CHROMA_PERSIST_DIR=./chroma_data
 4. Copy contents of `supabase_schema.sql` and run it
 5. Go to **Storage** and create a bucket named `media` (public)
 
-### 4. Local LLM Setup (Ollama)
+### 4. Get Groq API Key
 
-```bash
-# Install Ollama (https://ollama.ai)
-# Windows: Download installer
-# macOS: brew install ollama
-# Linux: curl -fsSL https://ollama.ai/install.sh | sh
+1. Go to [Groq Console](https://console.groq.com/)
+2. Sign up for a free account
+3. Navigate to API Keys section
+4. Create a new API key
+5. Copy the key and add it to your `.env` file
 
-# Pull model
-ollama pull llama3.1:8b
-
-# Start Ollama server (runs on port 11434)
-ollama serve
-```
-
-**Alternative: llama-cpp-python**
-
-```bash
-# Download GGUF model
-mkdir -p backend/models
-cd backend/models
-# Download from HuggingFace: https://huggingface.co/TheBloke/Llama-2-7B-Chat-GGUF
-```
-
-### 5. Start ChromaDB (Optional - Embedded by Default)
-
-ChromaDB runs in embedded mode by default. For server mode:
-
-```bash
-pip install chromadb
-chroma run --path ./chroma_data --port 8001
-```
-
-### 6. Start Backend
+### 5. Start Backend
 
 ```bash
 cd backend
 uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-### 7. Frontend Setup
+### 6. Frontend Setup
 
 ```bash
 cd frontend
@@ -369,8 +344,9 @@ INTENT_REFERENCES = {
 | `SUPABASE_KEY` | Supabase anon key | Yes |
 | `SUPABASE_SERVICE_ROLE_KEY` | Service role key | Yes |
 | `ENCRYPTION_KEY` | 64-char hex key | Yes |
-| `LLM_MODEL_PATH` | Path to GGUF model | No |
-| `OLLAMA_BASE_URL` | Ollama server URL | No |
+| `LLM_PROVIDER` | AI provider (groq/openrouter) | Yes |
+| `GROQ_API_KEY` | Groq API key | Yes |
+| `GROQ_MODEL` | Model name | Yes |
 | `EMBEDDING_MODEL` | HuggingFace model | No |
 | `CHROMA_PERSIST_DIR` | ChromaDB storage | No |
 | `MAX_FILE_SIZE_MB` | Upload limit | No |
@@ -403,9 +379,8 @@ vercel deploy
 ### Environment Setup
 1. Set all environment variables in your deployment platform
 2. Use a managed Supabase instance
-3. For LLM, consider:
-   - Self-hosted Ollama on a GPU server
-   - Cloud LLM APIs (OpenAI, Anthropic) with appropriate wrappers
+3. Configure Groq API key for fast LLM inference
+4. Ensure ChromaDB persistence is properly configured
 
 ---
 

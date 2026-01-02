@@ -6,8 +6,14 @@ Handles embedding storage, deduplication, and memory lifecycle.
 import uuid
 from datetime import datetime
 from typing import List, Optional, Dict, Any
-import chromadb
-from chromadb.config import Settings as ChromaSettings
+
+try:
+    import chromadb
+    from chromadb.config import Settings as ChromaSettings
+    CHROMADB_AVAILABLE = True
+except ImportError:
+    CHROMADB_AVAILABLE = False
+    print("⚠️ ChromaDB not installed. Memory features will be disabled.")
 
 from config import settings
 from models.message import MemoryEntry, MemoryCategory, MemorySearchResult
@@ -21,10 +27,26 @@ class MemoryService:
     
     def __init__(self):
         """Initialize ChromaDB client and collection."""
-        # New ChromaDB API (v1.0+)
-        self._client = chromadb.PersistentClient(
-            path=settings.chroma_persist_directory
-        )
+        if not CHROMADB_AVAILABLE:
+            print("⚠️ Memory service disabled - ChromaDB not available")
+            self._client = None
+            self._collection = None
+            self._embedding_model = None
+            return
+            
+        # Initialize ChromaDB client (Cloud or Local)
+        if settings.chroma_cloud_enabled and settings.chroma_api_key:
+            print("🌐 Initializing ChromaDB Cloud client...")
+            self._client = chromadb.CloudClient(
+                api_key=settings.chroma_api_key,
+                tenant=settings.chroma_tenant,
+                database=settings.chroma_database
+            )
+        else:
+            print("💾 Initializing ChromaDB Local client...")
+            self._client = chromadb.PersistentClient(
+                path=settings.chroma_persist_directory
+            )
         
         self._collection = self._client.get_or_create_collection(
             name=settings.chroma_collection_name,

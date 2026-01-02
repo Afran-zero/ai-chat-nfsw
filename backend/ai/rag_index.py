@@ -5,18 +5,22 @@ RAG Index using LlamaIndex for memory retrieval and context fusion.
 from typing import List, Optional, Dict, Any
 from datetime import datetime
 
-from llama_index.core import (
-    VectorStoreIndex,
-    Document,
-    StorageContext,
-    Settings as LlamaSettings,
-)
-from llama_index.core.node_parser import SentenceSplitter
-from llama_index.core.retrievers import VectorIndexRetriever
-from llama_index.core.query_engine import RetrieverQueryEngine
-from llama_index.embeddings.huggingface import HuggingFaceEmbedding
-from llama_index.vector_stores.chroma import ChromaVectorStore
-import chromadb
+try:
+    from llama_index.core import (
+        VectorStoreIndex,
+        Document,
+        StorageContext,
+        Settings as LlamaSettings,
+    )
+    from llama_index.core.node_parser import SentenceSplitter
+    from llama_index.core.retrievers import VectorIndexRetriever
+    from llama_index.core.query_engine import RetrieverQueryEngine
+    from llama_index.embeddings.huggingface import HuggingFaceEmbedding
+    from llama_index.vector_stores.chroma import ChromaVectorStore
+    import chromadb
+    LLAMA_INDEX_AVAILABLE = True
+except ImportError:
+    LLAMA_INDEX_AVAILABLE = False
 
 from config import settings
 

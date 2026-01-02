@@ -47,6 +47,10 @@ class Settings(BaseSettings):
         return [t.strip() for t in self.allowed_audio_types.split(",")]
     
     # ChromaDB
+    chroma_cloud_enabled: bool = False
+    chroma_api_key: str = ""
+    chroma_tenant: str = ""
+    chroma_database: str = ""
     chroma_persist_directory: str = "./chroma_db"
     chroma_collection_name: str = "couple_memories"
     
@@ -57,7 +61,11 @@ class Settings(BaseSettings):
     # LLM Configuration - OpenRouter (cloud) or Local
     openrouter_api_key: str = ""  # Get from https://openrouter.ai/keys
     openrouter_model: str = "meta-llama/llama-3.1-8b-instruct:free"  # Free model!
-    llm_provider: str = "openrouter"  # "openrouter" or "local"
+    llm_provider: str = "openrouter"  # "openrouter", "groq", or "local"
+    
+    # Groq API Configuration
+    groq_api_key: str = ""  # Get from https://console.groq.com/
+    groq_model: str = "llama-3.1-8b-instant"  # Fast inference model
     
     # Local LLM (if using local)
     llm_model_path: str = "./models/llama-3.1-8b-instruct.gguf"
