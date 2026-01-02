@@ -73,8 +73,6 @@ backend/chroma_db/
 
 # Models (large files)
 *.gguf
-models/
-backend/models/
 
 # Testing
 .coverage

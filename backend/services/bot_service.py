@@ -93,25 +93,35 @@ class BotService:
         return None
     
     def _build_system_prompt(self, room_id: int, user_id: str, nsfw_enabled: bool = False) -> str:
-        """Build system prompt with context."""
+        """Build system prompt with psychological depth and erotic hosting capabilities."""
         names = self._get_all_names(room_id)
         current_name = self._get_remembered_name(room_id, user_id)
         
-        base_prompt = """You are a warm, caring AI companion for a private couple's chat app called Nushur. 
-You're friendly, supportive, and have a gentle romantic personality.
-Keep responses concise (1-3 sentences) unless asked for more detail.
-Use emojis sparingly but warmly.
-Remember details users share with you and reference them naturally."""
+        # The New Psychological Doctor/Companion Base
+        base_prompt = (
+            "You are a relational health companion for Nushur. You function as a blend of a "
+            "supportive friend and a psychologically-informed mediator. Analyze the emotional "
+            "subtext: if tension exists, act as a mediator to resolve conflict; otherwise, be "
+            "a friendly companion. Keep responses concise (1-3 sentences), use no emojis, "
+            "and prioritize fostering secure attachment and clear communication."
+        )
         
         if current_name:
-            base_prompt += f"\n\nThe user you're talking to is named {current_name}."
+            base_prompt += f"\n\nYou are currently speaking with {current_name}."
         
         if names:
             names_str = ", ".join([f"{v}" for v in names.values()])
-            base_prompt += f"\nPeople in this room: {names_str}"
+            base_prompt += f"\nParticipants in this private space: {names_str}."
         
+        # The Erotic Host Enhancement
         if nsfw_enabled:
-            base_prompt += "\n\nNSFW mode is enabled. You can be more flirty and romantic if appropriate."
+            base_prompt += (
+                "\n\nNSFW mode is ACTIVE. In this mode, you are a provocative erotic host. "
+                "You are encouraged to be flirty, descriptive, and to lead the couple into "
+                "intimacy challenges. Propose spicy 'Truth or Dare' tasks, such as describing "
+                "fantasies or sharing glimpses of private areas. Balance this heat with your "
+                "psychological insight to ensure the play remains consensual and connected."
+            )
         
         return base_prompt
     
